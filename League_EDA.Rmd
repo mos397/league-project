@@ -1,0 +1,56 @@
+```{r}
+library(tidyverse)
+league <- read.csv('high_diamond_ranked_10min.csv')
+head(league)
+```
+# Checking Correlation - Looking for multicolinearity
+```{r}
+# creating correlation matrix
+corr = round(cor(league),2)
+# converting correlation matrix into a side by side table for easier visualizing and sorting
+corr[lower.tri(corr,diag=TRUE)]= NA
+corr_list = as.data.frame(as.table(corr))
+na.omit(corr)
+# sorting table by absolute value of the correlation
+corr_list[order(-abs(corr_list$Freq)),]
+```
+```{r}
+# First we have to set up a logistic model
+log.md1 <- glm(blueWins~.-gameId, binomial(link = "logit"), data=league)
+summary(log.md1)
+```
+```{r}
+alias(glm(blueWins~.-gameId, binomial(link = "logit"), data=league))
+```
+```{r}
+league2 <- subset(league, select = -c(blueCSPerMin, 
+                                     blueGoldPerMin, 
+                                     redFirstBlood, 
+                                     redKills, 
+                                     redDeaths, 
+                                     redGoldDiff, 
+                                     redExperienceDiff, 
+                                     redCSPerMin, 
+                                     redGoldPerMin,
+                                     redHeralds,
+                                     redTotalGold,
+                                     redTotalExperience,
+                                     blueHeralds
+                                     ))
+```
+
+```{r}
+log.md2 <- glm(blueWins~.-gameId, binomial(link = "logit"), data=league2)
+summary(log.md2)
+```
+We can see that many of the variables have high correlations with each other and thus can be removed. Also, the cursory model shows that many of the coefficients are also linear dependent on each other.
+```{r}
+
+```
+
+
+
+
+
+
+
